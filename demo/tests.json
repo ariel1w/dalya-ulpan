@@ -1,0 +1,517 @@
+{
+ "tests": [
+  {
+   "id": "mini-1",
+   "title": "מבחן קצר 1",
+   "subtitle": "יחידות 1-3",
+   "instructions": "שאלות 1-6: בחרו את התרגום הנכון.\nשאלות 7-12: כתבו את המילה החסרה בעברית.",
+   "order": 1,
+   "published": true,
+   "questions": [
+    {
+     "id": "q1",
+     "type": "mc",
+     "prompt": "מרחב בטוח",
+     "options": [
+      "Safe space",
+      "Quiet place",
+      "Work space",
+      "Open room"
+     ]
+    },
+    {
+     "id": "q2",
+     "type": "mc",
+     "prompt": "הקשבה",
+     "options": [
+      "Answering",
+      "Silence",
+      "Speaking",
+      "Listening"
+     ]
+    },
+    {
+     "id": "q3",
+     "type": "mc",
+     "prompt": "ביטוי עצמי",
+     "options": [
+      "Self-expression",
+      "Self-care",
+      "Self-esteem",
+      "Self-control"
+     ]
+    },
+    {
+     "id": "q4",
+     "type": "mc",
+     "prompt": "גבולות",
+     "options": [
+      "Expectations",
+      "Goals",
+      "Meetings",
+      "Boundaries"
+     ]
+    },
+    {
+     "id": "q5",
+     "type": "mc",
+     "prompt": "סודיות",
+     "options": [
+      "Frequency",
+      "Duration",
+      "Confidentiality",
+      "Stability"
+     ]
+    },
+    {
+     "id": "q6",
+     "type": "mc",
+     "prompt": "סיבת הפנייה",
+     "options": [
+      "Treatment goals",
+      "Clinical background",
+      "Reason for referral",
+      "Family status"
+     ]
+    },
+    {
+     "id": "q7",
+     "type": "fill",
+     "prompt": "בתחילת הטיפול עושים ______ (הערכה ראשונית) כדי להכיר את המטופל."
+    },
+    {
+     "id": "q8",
+     "type": "fill",
+     "prompt": "המפגשים מתקיימים פעם בשבוע. זו ה______ של הטיפול."
+    },
+    {
+     "id": "q9",
+     "type": "fill",
+     "prompt": "כל מפגש נמשך 50 דקות. זה ה______ של המפגש."
+    },
+    {
+     "id": "q10",
+     "type": "fill",
+     "prompt": "בישיבת ______ דיברנו על המטופלים."
+    },
+    {
+     "id": "q11",
+     "type": "fill",
+     "prompt": "הקשר בין המטפל למטופל נקרא ברית ______."
+    },
+    {
+     "id": "q12",
+     "type": "fill",
+     "prompt": "המטופלת מציירת ומדברת על ה______ שלה: עצב, כעס ושמחה."
+    }
+   ]
+  },
+  {
+   "id": "mini-2",
+   "title": "מבחן קצר 2",
+   "subtitle": "יחידות 4-6",
+   "instructions": "שאלות 1-6: בחרו את התרגום הנכון.\nשאלות 7-12: כתבו את המילה החסרה בעברית.",
+   "order": 2,
+   "published": true,
+   "questions": [
+    {
+     "id": "q1",
+     "type": "mc",
+     "prompt": "מרקם",
+     "options": [
+      "Liquid",
+      "Surface",
+      "Texture",
+      "Material"
+     ]
+    },
+    {
+     "id": "q2",
+     "type": "mc",
+     "prompt": "גמיש",
+     "options": [
+      "Flexible",
+      "Dirty",
+      "Rigid",
+      "Solid"
+     ]
+    },
+    {
+     "id": "q3",
+     "type": "mc",
+     "prompt": "שורדי טראומה",
+     "options": [
+      "Trauma survivors",
+      "Special needs",
+      "Mental health",
+      "Youth at risk"
+     ]
+    },
+    {
+     "id": "q4",
+     "type": "mc",
+     "prompt": "הדרכת הורים",
+     "options": [
+      "Family therapy",
+      "Dyadic therapy",
+      "Group therapy",
+      "Parent guidance"
+     ]
+    },
+    {
+     "id": "q5",
+     "type": "mc",
+     "prompt": "חמלה",
+     "options": [
+      "Presence",
+      "Ethics",
+      "Compassion",
+      "Reflection"
+     ]
+    },
+    {
+     "id": "q6",
+     "type": "mc",
+     "prompt": "תיקוף",
+     "options": [
+      "Intervention",
+      "Validation",
+      "Integration",
+      "Commitment"
+     ]
+    },
+    {
+     "id": "q7",
+     "type": "fill",
+     "prompt": "הילד ______ את הצבע על הדף עם האצבעות."
+    },
+    {
+     "id": "q8",
+     "type": "fill",
+     "prompt": "אחרי העבודה עם הצבעים צריך ______ את השולחן."
+    },
+    {
+     "id": "q9",
+     "type": "fill",
+     "prompt": "קבוצת מטופלים שנפגשת יחד עם מטפל אחד: טיפול ______."
+    },
+    {
+     "id": "q10",
+     "type": "fill",
+     "prompt": "אנשים מבוגרים, בני 70 ומעלה, הם ה______."
+    },
+    {
+     "id": "q11",
+     "type": "fill",
+     "prompt": "ילדים בני 0 עד 6 הם ה______."
+    },
+    {
+     "id": "q12",
+     "type": "fill",
+     "prompt": "המטפל מבין ומרגיש את מה שהמטופל מרגיש. זו ______."
+    }
+   ]
+  },
+  {
+   "id": "mini-3",
+   "title": "מבחן קצר 3",
+   "subtitle": "יחידות 7-9",
+   "instructions": "שאלות 1-6: בחרו את התרגום הנכון.\nשאלות 7-12: כתבו את המילה החסרה בעברית.",
+   "order": 3,
+   "published": true,
+   "questions": [
+    {
+     "id": "q1",
+     "type": "mc",
+     "prompt": "התבוננות",
+     "options": [
+      "Creation",
+      "Imagination",
+      "Presentation",
+      "Observation"
+     ]
+    },
+    {
+     "id": "q2",
+     "type": "mc",
+     "prompt": "שכבות",
+     "options": [
+      "Shapes",
+      "Frames",
+      "Layers",
+      "Lines"
+     ]
+    },
+    {
+     "id": "q3",
+     "type": "mc",
+     "prompt": "קו גלי",
+     "options": [
+      "Broken line",
+      "Continuous line",
+      "Straight line",
+      "Wavy line"
+     ]
+    },
+    {
+     "id": "q4",
+     "type": "mc",
+     "prompt": "ספונטני",
+     "options": [
+      "Organized",
+      "Detailed",
+      "Controlled",
+      "Spontaneous"
+     ]
+    },
+    {
+     "id": "q5",
+     "type": "mc",
+     "prompt": "העברה נגדית",
+     "options": [
+      "Countertransference",
+      "Projection",
+      "Transference",
+      "Resistance"
+     ]
+    },
+    {
+     "id": "q6",
+     "type": "mc",
+     "prompt": "מנגנון הגנה",
+     "options": [
+      "Defense mechanism",
+      "Containment",
+      "Internalization",
+      "Holding"
+     ]
+    },
+    {
+     "id": "q7",
+     "type": "fill",
+     "prompt": "בציור יש הרבה פרטים קטנים. הציור ______."
+    },
+    {
+     "id": "q8",
+     "type": "fill",
+     "prompt": "ציירי ______ עם שלוש צלעות."
+    },
+    {
+     "id": "q9",
+     "type": "fill",
+     "prompt": "הצבע האדום הוא הכי חזק בציור. הוא ______."
+    },
+    {
+     "id": "q10",
+     "type": "fill",
+     "prompt": "המטפלת החזיקה את הדף עבור המטופלת. היא שימשה כ______ שלישית."
+    },
+    {
+     "id": "q11",
+     "type": "fill",
+     "prompt": "בסוף המפגש מאיה נשמה עמוק ונאנחה ב______."
+    },
+    {
+     "id": "q12",
+     "type": "fill",
+     "prompt": "אנחנו מתמקדים במה שקורה בחדר ברגע זה: ______ ועכשיו."
+    }
+   ]
+  }
+ ],
+ "keys": {
+  "mini-1": {
+   "answers": {
+    "q1": {
+     "correct": 0,
+     "explain": "מרחב = space, בטוח = safe. בטיפול, מרחב בטוח הוא מקום שבו אפשר לדבר ולהרגיש בלי פחד."
+    },
+    "q2": {
+     "correct": 3,
+     "explain": "הקשבה = listening, מהפועל להקשיב (to listen). המטפל מקשיב למטופל."
+    },
+    "q3": {
+     "correct": 0,
+     "explain": "ביטוי = expression, עצמי = self. ביטוי עצמי = להביע את מה שיש בפנים, למשל דרך ציור."
+    },
+    "q4": {
+     "correct": 3,
+     "explain": "גבול = boundary, ברבים: גבולות. בטיפול יש גבולות ברורים: זמן, מקום וכללים."
+    },
+    "q5": {
+     "correct": 2,
+     "explain": "סוד = secret, סודיות = confidentiality. מה שנאמר בטיפול נשאר בחדר."
+    },
+    "q6": {
+     "correct": 2,
+     "explain": "סיבה = reason, פנייה = referral (פונים למישהו כדי לקבל עזרה). סיבת הפנייה = למה המטופל הגיע לטיפול."
+    },
+    "q7": {
+     "accept": [
+      "קליטה"
+     ],
+     "explain": "קליטה = intake: המפגש הראשון, שבו מכירים את המטופל ועושים הערכה ראשונית."
+    },
+    "q8": {
+     "accept": [
+      "תדירות"
+     ],
+     "explain": "תדירות = frequency: כמה פעמים נפגשים. פעם בשבוע = once a week."
+    },
+    "q9": {
+     "accept": [
+      "משך"
+     ],
+     "explain": "משך = duration: כמה זמן נמשך המפגש. נמשך ומשך באים מאותו שורש: מ-ש-ך."
+    },
+    "q10": {
+     "accept": [
+      "צוות"
+     ],
+     "explain": "צוות = team, staff. ישיבת צוות = staff meeting, שבה אנשי הצוות מדברים על המטופלים."
+    },
+    "q11": {
+     "accept": [
+      "טיפולית"
+     ],
+     "explain": "ברית טיפולית = therapeutic alliance: הקשר והאמון בין המטפל למטופל. ברית היא מילה בנקבה, לכן טיפולית (ולא טיפולי)."
+    },
+    "q12": {
+     "accept": [
+      "רגשות"
+     ],
+     "explain": "רגש = feeling, emotion. ברבים: רגשות. עצב, כעס ושמחה הם רגשות."
+    }
+   }
+  },
+  "mini-2": {
+   "answers": {
+    "q1": {
+     "correct": 2,
+     "explain": "מרקם = texture: איך משהו מרגיש במגע, למשל חלק או מחוספס."
+    },
+    "q2": {
+     "correct": 0,
+     "explain": "גמיש = flexible: משהו שמתכופף ולא נשבר. ההפך: נוקשה (rigid)."
+    },
+    "q3": {
+     "correct": 0,
+     "explain": "שורד = survivor, מהפועל לשרוד (to survive). שורדי טראומה = trauma survivors."
+    },
+    "q4": {
+     "correct": 3,
+     "explain": "הדרכה = guidance, מהפועל להדריך (to guide). הדרכת הורים = עבודה עם ההורים, לא עם הילד."
+    },
+    "q5": {
+     "correct": 2,
+     "explain": "חמלה = compassion: רגש של אכפתיות ורוך כלפי מי שסובל."
+    },
+    "q6": {
+     "correct": 1,
+     "explain": "תיקוף = validation: לומר למטופל שהרגש שלו מובן ולגיטימי. מאותו שורש כמו תוקף (valid)."
+    },
+    "q7": {
+     "accept": [
+      "מורח"
+     ],
+     "explain": "למרוח = to spread, to smear. הילד מורח את הצבע עם האצבעות, כמו בצביעת אצבעות."
+    },
+    "q8": {
+     "accept": [
+      "לנקות"
+     ],
+     "explain": "לנקות = to clean. אחרי המילה צריך בא פועל בשם הפועל: צריך לנקות."
+    },
+    "q9": {
+     "accept": [
+      "קבוצתי"
+     ],
+     "explain": "קבוצה = group, קבוצתי = group (תואר). טיפול קבוצתי = group therapy."
+    },
+    "q10": {
+     "accept": [
+      "גיל השלישי"
+     ],
+     "explain": "הגיל השלישי = old age, ממש: the third age. אנשים מבוגרים, בני 70 ומעלה."
+    },
+    "q11": {
+     "accept": [
+      "גיל הרך"
+     ],
+     "explain": "הגיל הרך = early childhood: ילדים מלידה עד גיל 6. רך = soft, tender."
+    },
+    "q12": {
+     "accept": [
+      "אמפתיה",
+      "אמפטיה"
+     ],
+     "explain": "אמפתיה = empathy: להבין ולהרגיש את מה שהאחר מרגיש. כמעט אותה מילה כמו באנגלית."
+    }
+   }
+  },
+  "mini-3": {
+   "answers": {
+    "q1": {
+     "correct": 3,
+     "explain": "התבוננות = observation, מהפועל להתבונן (to observe, to look closely)."
+    },
+    "q2": {
+     "correct": 2,
+     "explain": "שכבה = layer, ברבים: שכבות. בציור אפשר לשים צבע בשכבות, אחת על השנייה."
+    },
+    "q3": {
+     "correct": 3,
+     "explain": "קו = line, גלי = wavy (מהמילה גל, wave). קו גלי עולה ויורד כמו גלים."
+    },
+    "q4": {
+     "correct": 3,
+     "explain": "ספונטני = spontaneous: בלי תכנון מראש. ההפך: מתוכנן."
+    },
+    "q5": {
+     "correct": 0,
+     "explain": "העברה = transference, נגדית = counter. העברה נגדית = countertransference: הרגשות של המטפל כלפי המטופל."
+    },
+    "q6": {
+     "correct": 0,
+     "explain": "מנגנון = mechanism, הגנה = defense. מנגנון הגנה = דרך לא מודעת להגן על עצמנו מכאב."
+    },
+    "q7": {
+     "accept": [
+      "מפורט"
+     ],
+     "explain": "מפורט = detailed, מהמילה פרט (detail). הרבה פרטים קטנים = ציור מפורט."
+    },
+    "q8": {
+     "accept": [
+      "משולש"
+     ],
+     "explain": "משולש = triangle: צורה עם שלוש צלעות. שלוש = three, ומכאן משולש."
+    },
+    "q9": {
+     "accept": [
+      "דומיננטי"
+     ],
+     "explain": "דומיננטי = dominant: הכי חזק ובולט. הצבע הוא מילה בזכר, לכן דומיננטי (ולא דומיננטית)."
+    },
+    "q10": {
+     "accept": [
+      "יד"
+     ],
+     "explain": "יד שלישית = third hand: מושג בטיפול באמנות. המטפל עוזר ליצירה של המטופל בלי להשתלט עליה."
+    },
+    "q11": {
+     "accept": [
+      "הקלה"
+     ],
+     "explain": "הקלה = relief. נאנחה בהקלה = sighed with relief: הרגישה שמשהו קשה עבר."
+    },
+    "q12": {
+     "accept": [
+      "כאן"
+     ],
+     "explain": "כאן ועכשיו = here and now: מתמקדים במה שקורה ברגע הזה, בחדר. כאן = here."
+    }
+   }
+  }
+ }
+}
