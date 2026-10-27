@@ -402,3 +402,9 @@ button.brow:hover, .brow.on { background: var(--paper); }
 .two > .card + .card { margin-top: 0; }
 .matrix .cell { width: 26px; height: 26px; font-size: 13px; border-radius: 6px; }
 @media (max-width: 860px) { .two { grid-template-columns: 1fr; } .trow { grid-template-columns: 1fr auto; } .trow .tm { grid-column: 1 / -1; grid-row: 2; } }
+
+/* grade history */
+.tries { display: block; color: var(--ink-2); font-size: 12px; margin-top: 2px; }
+.tries-list { margin-top: 12px; font-size: 14px; }
+.tries-list p { margin: 4px 0; }
+.tries-list .tries { display: inline; font-size: 14px; }

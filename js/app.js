@@ -406,6 +406,7 @@ async function resultPage(id) {
   if (!sub?.submitted) { location.hash = `#/test/${encodeURIComponent(id)}`; return; }
   const grade = await S.getMyGrade(id);
   const g = gradeSubmission(test, key, sub, grade?.overrides);
+  const myTries = [...(sub.attempts || []).filter((a) => a.submittedAt).map((a) => ({ pct: gradeSubmission(test, key, a).pct })), { pct: g.pct }];
   const [t1, t2] = endMessage(g.pct);
   const fresh = Date.now() - (sub.submittedAt || 0) < 15000;
   app.innerHTML = `
@@ -429,9 +430,12 @@ async function resultPage(id) {
             ${r.key?.explainEn ? `<details class="en-more" dir="ltr" lang="en"><summary>Read the explanation in English</summary><p>${enText(r.key.explainEn)}</p></details>` : ''}
           </div>
         </div>`).join('')}
-      <div class="center"><a class="btn primary" href="#/">חזרה למבחנים</a>${ME.teacher ? ' <button class="btn" id="again">לנסות את המבחן שוב</button>' : ''}</div>
+      ${myTries.length > 1 ? `<p class="center-t muted">הציונים שלך במבחן הזה: ${triesText(myTries)}</p>` : ''}
+      <div class="center"><a class="btn primary" href="#/">חזרה למבחנים</a> <button class="btn" id="again">לעשות את המבחן שוב</button></div>
+      <p class="center-t muted small">אפשר לעשות את המבחן שוב כמה פעמים שרוצים. כל הציונים נשמרים, ו${h(SITE.teacher.split(' ')[0])} רואה את כולם.</p>
+      <p class="center-t muted small" dir="ltr" lang="en">You can take the test again as many times as you like. Every grade is saved, and ${h(SITE.teacherEn || 'your teacher')} sees all of them.</p>
     </div>`;
-  $('#again')?.addEventListener('click', async () => { await S.reopen(sub.id); location.hash = `#/test/${encodeURIComponent(id)}`; });
+  $('#again').addEventListener('click', async (e) => { e.currentTarget.disabled = true; await S.reopen(sub.id); location.hash = `#/test/${encodeURIComponent(id)}`; });
   if (fresh && g.pct >= 50) confetti(g.pct >= 85 ? 160 : 90);
 }
 
@@ -445,6 +449,11 @@ async function loadAll() {
   const subs = allSubs.filter((s) => !tEmails.has(s.email));
   return { tests, subs, grades, users: users.filter((u) => !tEmails.has(u.email)), keys };
 }
+
+const millis = (v) => (v?.toMillis ? v.toMillis() : v?.seconds ? v.seconds * 1000 : v || null);
+// "50% ← 75% ← 92%": every grade a student got on one test, in order. Empty for a single try.
+const triesText = (tries) => (tries.length > 1 ? tries.map((x) => `<bdi dir="ltr">${x.pct}%</bdi>`).join(' ← ') : '');
+const triesLine = (x) => `${x.tries.length > 1 ? `<small class="tries">${x.tries.length} ניסיונות: ${triesText(x.tries)}</small>` : ''}${x.s.retrying ? '<small class="chip progress">עושה שוב עכשיו</small>' : ''}`;
 
 const avgOf = (a) => (a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : null);
 const medianOf = (a) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); const m = s.length >> 1; return Math.round(s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2); };
@@ -462,7 +471,18 @@ function analyze({ tests, subs, grades, users, keys }) {
   const perTest = live.map((t) => {
     const key = keys[t.id];
     const ts = subs.filter((s) => s.testId === t.id);
-    const graded = ts.map((s) => ({ s, g: gradeSubmission(t, key, s, grades[s.id]?.overrides) }));
+    const graded = ts.map((s) => {
+      // Every finished try, oldest first. While a student redoes the test, the last finished try still counts.
+      const tries = (s.attempts || []).filter((a) => a.submittedAt).map((a) => ({ pct: gradeSubmission(t, key, a).pct, at: millis(a.submittedAt) }));
+      const last = (s.attempts || []).filter((a) => a.submittedAt).at(-1);
+      if (!s.submitted && last) {
+        const prev = { ...s, answers: last.answers, submitted: true, submittedAt: millis(last.submittedAt), retrying: true };
+        return { s: prev, g: gradeSubmission(t, key, prev), tries };
+      }
+      const g = gradeSubmission(t, key, s, grades[s.id]?.overrides);
+      if (s.submitted) tries.push({ pct: g.pct, at: s.submittedAt });
+      return { s, g, tries };
+    });
     const done = graded.filter((x) => x.s.submitted);
     const scores = done.map((x) => x.g.pct);
     const started = new Set(ts.map((s) => s.uid));
@@ -619,10 +639,10 @@ async function board(id, tab = 'questions') {
             <thead><tr><th class="name">תלמיד/ה</th><th>ציון</th>${qs.map((q, n) => `<th title="${h(qWord(q, key?.answers?.[q.id]))}">${n + 1}</th>`).join('')}<th></th></tr></thead>
             <tbody>${rowsSorted.map(({ s, g }) => `
               <tr class="${s.submitted ? '' : 'prog'}">
-                <td class="name"><a href="#/t/student/${encodeURIComponent(s.uid)}"><span class="avatar sm">${initials(s.name)}</span>${bd(s.name)}</a>${s.submitted ? `<small>${when(s.submittedAt)}</small>` : '<small class="chip progress">באמצע</small>'}</td>
+                <td class="name"><a href="#/t/student/${encodeURIComponent(s.uid)}"><span class="avatar sm">${initials(s.name)}</span>${bd(s.name)}</a>${s.submitted ? `<small>${when(s.submittedAt)}</small>` : '<small class="chip progress">באמצע</small>'}${triesLine({ s, tries: graded.find((x) => x.s === s)?.tries || [] })}</td>
                 <td><span class="sc"><span class="meter sm"><i class="${pctClass(g.pct)}" style="width:${g.pct}%"></i></span><bdi dir="ltr">${g.score}/${g.total}</bdi></span></td>
                 ${g.rows.map((r) => `<td><button class="cell ${r.final ? 'right' : r.status} ${r.overridden ? 'ov' : ''}" data-s="${h(s.id)}" data-q="${r.q.id}" ${r.status === 'blank' ? 'disabled' : ''} aria-label="${r.final ? 'נכון' : r.status}">${r.overridden ? (r.final ? '✓' : '✗') : sym[r.final ? 'right' : r.status]}</button></td>`).join('')}
-                <td>${s.submitted ? `<button class="btn ghost xs" data-reopen="${h(s.id)}" title="התשובות הקודמות נשמרות, והמבחן נפתח מההתחלה">ניסיון חוזר</button>` : ''}</td>
+                <td>${s.submitted && !s.retrying ? `<button class="btn ghost xs" data-reopen="${h(s.id)}" title="התשובות הקודמות נשמרות, והמבחן נפתח מההתחלה">ניסיון חוזר</button>` : ''}</td>
               </tr>`).join('') || `<tr><td colspan="${qs.length + 3}" class="empty-row">עוד אף אחד לא התחיל את המבחן.</td></tr>`}</tbody>
           </table>
         </div>
@@ -656,8 +676,8 @@ async function board(id, tab = 'questions') {
 
   $('#pub').addEventListener('change', async (e) => { await S.saveTest({ ...test, published: e.target.checked }, key || { answers: {} }); toast(e.target.checked ? 'התלמידים רואים את המבחן' : 'המבחן הוסתר מהתלמידים'); });
   $('#csv').addEventListener('click', () => {
-    const head = ['תלמיד/ה', 'אימייל', 'מצב', 'הושלם', 'ציון', 'מתוך', ...qs.map((q, n) => `שאלה ${n + 1}: ${clean(q.prompt)}`)];
-    const rows = rowsSorted.map(({ s, g }) => [s.name, s.email, s.submitted ? 'הושלם' : 'באמצע', s.submittedAt ? new Date(s.submittedAt).toLocaleString('he-IL') : '', g.score, g.total, ...g.rows.map((r) => (answered(r.given) ? `${r.final ? '✓' : '✗'} ${r.q.type === 'mc' ? r.q.options?.[r.given] ?? '' : clean(r.given)}` : ''))]);
+    const head = ['תלמיד/ה', 'אימייל', 'מצב', 'הושלם', 'ציון', 'מתוך', 'כל הניסיונות', ...qs.map((q, n) => `שאלה ${n + 1}: ${clean(q.prompt)}`)];
+    const rows = rowsSorted.map(({ s, g }) => [s.name, s.email, s.submitted ? 'הושלם' : 'באמצע', s.submittedAt ? new Date(s.submittedAt).toLocaleString('he-IL') : '', g.score, g.total, (graded.find((x) => x.s === s)?.tries || []).map((x) => x.pct + '%').join(' > '), ...g.rows.map((r) => (answered(r.given) ? `${r.final ? '✓' : '✗'} ${r.q.type === 'mc' ? r.q.options?.[r.given] ?? '' : clean(r.given)}` : ''))]);
     download(`${test.title} - תוצאות.csv`, '﻿' + [head, ...rows].map((r) => r.map(csvCell).join(',')).join('\n'), 'text/csv');
   });
   $$('[data-reopen]').forEach((b) => b.addEventListener('click', async () => {
@@ -694,7 +714,7 @@ async function studentsPage() {
       <tbody>${rows.map(({ u, mine, avg }) => `<tr>
         <td class="name"><a href="#/t/student/${encodeURIComponent(u.id)}"><span class="avatar sm">${u.photo ? `<img src="${h(u.photo)}" alt="" referrerpolicy="no-referrer">` : initials(u.name)}</span><span><b>${bd(u.name)}</b><small><bdi dir="ltr">${h(u.email)}</bdi></small></span></a></td>
         <td><span class="score ${avg != null ? pctClass(avg) : ''}"><bdi dir="ltr">${avg != null ? avg + '%' : '–'}</bdi></span></td>
-        ${mine.map(({ x }) => `<td>${!x ? '<span class="muted small">לא התחיל/ה</span>' : x.s.submitted ? `<bdi dir="ltr">${x.g.score}/${x.g.total}</bdi>` : '<span class="chip progress">באמצע</span>'}</td>`).join('')}
+        ${mine.map(({ x }) => `<td>${!x ? '<span class="muted small">לא התחיל/ה</span>' : x.s.submitted ? `<bdi dir="ltr">${x.g.score}/${x.g.total}</bdi>${triesLine(x)}` : '<span class="chip progress">באמצע</span>'}</td>`).join('')}
         <td class="muted small">${when(u.lastSeen)}</td></tr>`).join('') || `<tr><td colspan="9" class="empty-row">עדיין אין תלמידים. שתפו את קישור האתר עם הכיתה (הגדרות וגיבוי).</td></tr>`}</tbody>
     </table></div></div>`;
 }
@@ -717,6 +737,7 @@ async function studentPage(uid) {
     </div>
     <div class="card"><h3>לפי מבחן</h3>
       ${barList(mine.map(({ p, x }) => ({ label: `${bd(p.t.title)} <span class="muted small">${bd(p.t.subtitle || '')}</span>`, pct: x?.s.submitted ? x.g.pct : null, tone: x?.s.submitted ? tone(x.g.pct) : '', note: !x ? 'לא התחיל/ה' : x.s.submitted ? `${x.g.score}/${x.g.total}` : 'באמצע' })))}
+      ${mine.some(({ x }) => x?.tries.length > 1 || x?.s.retrying) ? `<div class="tries-list">${mine.filter(({ x }) => x?.tries.length > 1 || x?.s.retrying).map(({ p, x }) => `<p><b>${bd(p.t.title)}:</b> ${triesLine(x)}</p>`).join('')}</div>` : ''}
     </div>
     <div class="card"><h3>מילים לחזרה <span class="muted small">(${missed.length})</span></h3>
       ${missed.length ? `<div class="missed">${missed.map((m) => `<div class="mrow"><b>${bd(m.word)}</b><span class="muted small">ענה/תה: ${answerText(m.r.q, m.r.given)}</span><span class="muted small">${bd(m.t.title)}</span></div>`).join('')}</div>` : '<p class="muted">אין. כל התשובות נכונות עד עכשיו.</p>'}

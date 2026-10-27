@@ -14,4 +14,5 @@ export const SITE = {
   tagline: 'עברית דרך טיפול באמנות',
   taglineEn: 'Hebrew through art therapy',
   teacher: 'דליה ויסברוד',
+  teacherEn: 'Dalya',
 };
