@@ -278,9 +278,15 @@ async function takeTest(id) {
           <h1>${bd(test.title)}</h1><p class="muted big">${bd(test.subtitle || '')}</p>
           ${test.instructions ? `<div class="instructions">${test.instructions.split('\n').map((l) => `<p>${bd(l)}</p>`).join('')}</div>` : ''}
           <ul class="howto"><li><b>${qs.length}</b> שאלות, אחת בכל פעם</li><li>אחרי כל תשובה תראו מיד אם צדקתם, עם הסבר</li><li>כל תשובה נשמרת. אפשר לעצור ולהמשיך אחר כך</li></ul>
+          <button class="en-btn" id="enbtn" aria-expanded="false" dir="ltr" lang="en">Don't understand the Hebrew? Read the instructions in English</button>
+          <div class="en-fb" id="enfb" dir="ltr" lang="en" hidden>
+            ${test.instructionsEn ? test.instructionsEn.split('\n').map((l) => `<p>${enText(l)}</p>`).join('') : ''}
+            <ul><li><b>${qs.length}</b> questions, one at a time</li><li>After each answer you see right away if you were right, with an explanation</li><li>Every answer is saved. You can stop and continue later</li></ul>
+          </div>
           <button class="btn primary big" id="start">יאללה, מתחילים ←</button>
         </div>
       </div>`;
+    $('#enbtn').addEventListener('click', () => { const en = $('#enfb'); en.hidden = !en.hidden; $('#enbtn').setAttribute('aria-expanded', String(!en.hidden)); });
     await new Promise((r) => $('#start').addEventListener('click', r));
     sub = await S.startSubmission(id);
   }
@@ -754,6 +760,7 @@ async function editor(id) {
           <label>שם המבחן<input id="t-title" dir="auto" value="${h(test.title)}" placeholder="Mini Assessment 4"></label>
           <label>כותרת משנה<input id="t-sub" dir="auto" value="${h(test.subtitle || '')}" placeholder="Units 10-12"></label>
           <label>הוראות לתלמידים<textarea id="t-ins" dir="rtl" rows="2" placeholder="לא חובה">${h(test.instructions || '')}</textarea></label>
+          <label>הוראות באנגלית (מופיעות רק בלחיצה על הכפתור)<textarea id="t-ins-en" dir="ltr" rows="2" placeholder="Questions 1-6: choose the correct translation.">${h(test.instructionsEn || '')}</textarea></label>
           <label class="switch"><input type="checkbox" id="t-pub" ${test.published ? 'checked' : ''}><i></i>פורסם (התלמידים רואים אותו)</label>
         </div>
         <div id="eqs">${test.questions.map((q, n) => {
@@ -784,6 +791,7 @@ async function editor(id) {
     test.title = $('#t-title').value.trim();
     test.subtitle = $('#t-sub').value.trim();
     test.instructions = $('#t-ins').value.trim();
+    test.instructionsEn = $('#t-ins-en').value.trim();
     test.published = $('#t-pub').checked;
     $$('.eq').forEach((el) => {
       const q = test.questions[+el.dataset.i];

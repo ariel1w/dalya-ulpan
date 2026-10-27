@@ -104,7 +104,8 @@
      "type": "fill",
      "prompt": "המטופלת מציירת ומדברת על ה______ שלה: עצב, כעס ושמחה."
     }
-   ]
+   ],
+   "instructionsEn": "Questions 1-6: choose the correct translation.\nQuestions 7-12: write the missing word in Hebrew."
   },
   {
    "id": "mini-2",
@@ -210,7 +211,8 @@
      "type": "fill",
      "prompt": "המטפל מבין ומרגיש את מה שהמטופל מרגיש. זו ______."
     }
-   ]
+   ],
+   "instructionsEn": "Questions 1-6: choose the correct translation.\nQuestions 7-12: write the missing word in Hebrew."
   },
   {
    "id": "mini-3",
@@ -316,7 +318,8 @@
      "type": "fill",
      "prompt": "אנחנו מתמקדים במה שקורה בחדר ברגע זה: ______ ועכשיו."
     }
-   ]
+   ],
+   "instructionsEn": "Questions 1-6: choose the correct translation.\nQuestions 7-12: write the missing word in Hebrew."
   }
  ],
  "keys": {
