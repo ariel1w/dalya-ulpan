@@ -134,6 +134,9 @@ a.test-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(60
 .hero-card .en { color: var(--ink-2); font-size: 14px; }
 .fine { font-size: 13px; color: var(--ink-2); margin-top: 14px; }
 .fine.en { margin-top: 2px; }
+.demo-in { margin: 22px 0 12px; display: grid; gap: 6px; }
+.demo-in input { text-align: center; }
+.demo-in .fine { margin-top: 0; }
 
 /* intro */
 .intro { padding: 32px 28px; overflow: hidden; text-align: center; }

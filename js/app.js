@@ -146,6 +146,7 @@ function signInPage() {
         <h1>${h(SITE.name)}</h1>
         <p class="lead">${h(SITE.tagline)}</p>
         <p class="en" dir="ltr" lang="en">${h(SITE.taglineEn)}</p>
+        ${DEMO ? `<form class="demo-in" id="demoin"><input type="email" id="demoemail" dir="ltr" placeholder="name@gmail.com" required autocomplete="email"><span class="fine">בתצוגה המקדימה מקלידים את כתובת ה-<bdi dir="ltr">Gmail</bdi>. <bdi dir="ltr">${h(OWNERS[0])}</bdi> נכנסת כמורה, כל כתובת אחרת כתלמיד/ה.</span></form>` : ''}
         <button class="btn google" id="signin">
           <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.8 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.8c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-2.9-.8-4.7s.3-3.3.8-4.7l-7.8-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.8c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.2-13.5-9.9l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>
           <span>כניסה עם <bdi dir="ltr">Google</bdi></span>
@@ -157,9 +158,11 @@ function signInPage() {
   $('#signin').addEventListener('click', async (e) => {
     const b = e.currentTarget;
     b.disabled = true;
-    try { await S.signIn(); } catch (err) { toast('הכניסה נכשלה: ' + err.message, 'bad'); }
+    if (DEMO) { $('#demoemail').reportValidity(); if (!$('#demoemail').checkValidity()) return (b.disabled = false); }
+    try { await S.signIn(DEMO ? $('#demoemail').value : undefined); } catch (err) { toast('הכניסה נכשלה: ' + err.message, 'bad'); }
     b.disabled = false;
   });
+  $('#demoin')?.addEventListener('submit', (e) => { e.preventDefault(); $('#signin').click(); });
 }
 
 // ---------- router ----------
