@@ -324,63 +324,75 @@
    "answers": {
     "q1": {
      "correct": 0,
-     "explain": "מרחב = space, בטוח = safe. בטיפול, מרחב בטוח הוא מקום שבו אפשר לדבר ולהרגיש בלי פחד."
+     "explain": "מרחב = space, בטוח = safe. בטיפול, מרחב בטוח הוא מקום שבו אפשר לדבר ולהרגיש בלי פחד.",
+     "explainEn": "מרחב = space, בטוח = safe. In therapy, a safe space is a place where you can talk and feel without fear."
     },
     "q2": {
      "correct": 3,
-     "explain": "הקשבה = listening, מהפועל להקשיב (to listen). המטפל מקשיב למטופל."
+     "explain": "הקשבה = listening, מהפועל להקשיב (to listen). המטפל מקשיב למטופל.",
+     "explainEn": "הקשבה = listening, from the verb להקשיב (to listen). The therapist listens to the client."
     },
     "q3": {
      "correct": 0,
-     "explain": "ביטוי = expression, עצמי = self. ביטוי עצמי = להביע את מה שיש בפנים, למשל דרך ציור."
+     "explain": "ביטוי = expression, עצמי = self. ביטוי עצמי = להביע את מה שיש בפנים, למשל דרך ציור.",
+     "explainEn": "ביטוי = expression, עצמי = self. Self-expression means letting out what is inside you, for example through drawing."
     },
     "q4": {
      "correct": 3,
-     "explain": "גבול = boundary, ברבים: גבולות. בטיפול יש גבולות ברורים: זמן, מקום וכללים."
+     "explain": "גבול = boundary, ברבים: גבולות. בטיפול יש גבולות ברורים: זמן, מקום וכללים.",
+     "explainEn": "גבול = boundary; plural: גבולות. Therapy has clear boundaries: time, place and rules."
     },
     "q5": {
      "correct": 2,
-     "explain": "סוד = secret, סודיות = confidentiality. מה שנאמר בטיפול נשאר בחדר."
+     "explain": "סוד = secret, סודיות = confidentiality. מה שנאמר בטיפול נשאר בחדר.",
+     "explainEn": "סוד = secret, so סודיות = confidentiality. What is said in therapy stays in the room."
     },
     "q6": {
      "correct": 2,
-     "explain": "סיבה = reason, פנייה = referral (פונים למישהו כדי לקבל עזרה). סיבת הפנייה = למה המטופל הגיע לטיפול."
+     "explain": "סיבה = reason, פנייה = referral (פונים למישהו כדי לקבל עזרה). סיבת הפנייה = למה המטופל הגיע לטיפול.",
+     "explainEn": "סיבה = reason, פנייה = referral (turning to someone for help). סיבת הפנייה = why the client came to therapy."
     },
     "q7": {
      "accept": [
       "קליטה"
      ],
-     "explain": "קליטה = intake: המפגש הראשון, שבו מכירים את המטופל ועושים הערכה ראשונית."
+     "explain": "קליטה = intake: המפגש הראשון, שבו מכירים את המטופל ועושים הערכה ראשונית.",
+     "explainEn": "The sentence: \"At the start of therapy we do ______ (a first assessment) to get to know the client.\" The answer is קליטה = intake, the first meeting."
     },
     "q8": {
      "accept": [
       "תדירות"
      ],
-     "explain": "תדירות = frequency: כמה פעמים נפגשים. פעם בשבוע = once a week."
+     "explain": "תדירות = frequency: כמה פעמים נפגשים. פעם בשבוע = once a week.",
+     "explainEn": "The sentence: \"The sessions take place once a week. This is the ______ of the therapy.\" The answer is תדירות = frequency: how often you meet."
     },
     "q9": {
      "accept": [
       "משך"
      ],
-     "explain": "משך = duration: כמה זמן נמשך המפגש. נמשך ומשך באים מאותו שורש: מ-ש-ך."
+     "explain": "משך = duration: כמה זמן נמשך המפגש. נמשך ומשך באים מאותו שורש: מ-ש-ך.",
+     "explainEn": "The sentence: \"Each session lasts 50 minutes. This is the ______ of the session.\" The answer is משך = duration. נמשך (lasts) and משך come from the same root, מ-ש-ך."
     },
     "q10": {
      "accept": [
       "צוות"
      ],
-     "explain": "צוות = team, staff. ישיבת צוות = staff meeting, שבה אנשי הצוות מדברים על המטופלים."
+     "explain": "צוות = team, staff. ישיבת צוות = staff meeting, שבה אנשי הצוות מדברים על המטופלים.",
+     "explainEn": "The sentence: \"At the ______ meeting we talked about the clients.\" The answer is צוות = team, staff. ישיבת צוות = staff meeting."
     },
     "q11": {
      "accept": [
       "טיפולית"
      ],
-     "explain": "ברית טיפולית = therapeutic alliance: הקשר והאמון בין המטפל למטופל. ברית היא מילה בנקבה, לכן טיפולית (ולא טיפולי)."
+     "explain": "ברית טיפולית = therapeutic alliance: הקשר והאמון בין המטפל למטופל. ברית היא מילה בנקבה, לכן טיפולית (ולא טיפולי).",
+     "explainEn": "The sentence: \"The bond between therapist and client is called the ______ alliance.\" The answer is טיפולית = therapeutic. ברית (alliance) is feminine, so it is טיפולית, not טיפולי."
     },
     "q12": {
      "accept": [
       "רגשות"
      ],
-     "explain": "רגש = feeling, emotion. ברבים: רגשות. עצב, כעס ושמחה הם רגשות."
+     "explain": "רגש = feeling, emotion. ברבים: רגשות. עצב, כעס ושמחה הם רגשות.",
+     "explainEn": "The sentence: \"The client draws and talks about her ______: sadness, anger and joy.\" The answer is רגשות = feelings, emotions (singular: רגש)."
     }
    }
   },
@@ -388,64 +400,76 @@
    "answers": {
     "q1": {
      "correct": 2,
-     "explain": "מרקם = texture: איך משהו מרגיש במגע, למשל חלק או מחוספס."
+     "explain": "מרקם = texture: איך משהו מרגיש במגע, למשל חלק או מחוספס.",
+     "explainEn": "מרקם = texture: how something feels to the touch, for example smooth or rough."
     },
     "q2": {
      "correct": 0,
-     "explain": "גמיש = flexible: משהו שמתכופף ולא נשבר. ההפך: נוקשה (rigid)."
+     "explain": "גמיש = flexible: משהו שמתכופף ולא נשבר. ההפך: נוקשה (rigid).",
+     "explainEn": "גמיש = flexible: something that bends and doesn't break. The opposite is נוקשה (rigid)."
     },
     "q3": {
      "correct": 0,
-     "explain": "שורד = survivor, מהפועל לשרוד (to survive). שורדי טראומה = trauma survivors."
+     "explain": "שורד = survivor, מהפועל לשרוד (to survive). שורדי טראומה = trauma survivors.",
+     "explainEn": "שורד = survivor, from the verb לשרוד (to survive). שורדי טראומה = trauma survivors."
     },
     "q4": {
      "correct": 3,
-     "explain": "הדרכה = guidance, מהפועל להדריך (to guide). הדרכת הורים = עבודה עם ההורים, לא עם הילד."
+     "explain": "הדרכה = guidance, מהפועל להדריך (to guide). הדרכת הורים = עבודה עם ההורים, לא עם הילד.",
+     "explainEn": "הדרכה = guidance, from the verb להדריך (to guide). הדרכת הורים = parent guidance: working with the parents, not with the child."
     },
     "q5": {
      "correct": 2,
-     "explain": "חמלה = compassion: רגש של אכפתיות ורוך כלפי מי שסובל."
+     "explain": "חמלה = compassion: רגש של אכפתיות ורוך כלפי מי שסובל.",
+     "explainEn": "חמלה = compassion: a feeling of care and tenderness toward someone who is suffering."
     },
     "q6": {
      "correct": 1,
-     "explain": "תיקוף = validation: לומר למטופל שהרגש שלו מובן ולגיטימי. מאותו שורש כמו תוקף (valid)."
+     "explain": "תיקוף = validation: לומר למטופל שהרגש שלו מובן ולגיטימי. מאותו שורש כמו תוקף (valid).",
+     "explainEn": "תיקוף = validation: telling the client their feeling is understandable and legitimate. Same root as תוקף (valid)."
     },
     "q7": {
      "accept": [
       "מורח"
      ],
-     "explain": "למרוח = to spread, to smear. הילד מורח את הצבע עם האצבעות, כמו בצביעת אצבעות."
+     "explain": "למרוח = to spread, to smear. הילד מורח את הצבע עם האצבעות, כמו בצביעת אצבעות.",
+     "explainEn": "The sentence: \"The child ______ the paint on the page with his fingers.\" The answer is מורח = spreads, smears (verb: למרוח), like finger painting."
     },
     "q8": {
      "accept": [
       "לנקות"
      ],
-     "explain": "לנקות = to clean. אחרי המילה צריך בא פועל בשם הפועל: צריך לנקות."
+     "explain": "לנקות = to clean. אחרי המילה צריך בא פועל בשם הפועל: צריך לנקות.",
+     "explainEn": "The sentence: \"After working with the paints we need ______ the table.\" The answer is לנקות = to clean. After צריך (need) comes the infinitive: צריך לנקות."
     },
     "q9": {
      "accept": [
       "קבוצתי"
      ],
-     "explain": "קבוצה = group, קבוצתי = group (תואר). טיפול קבוצתי = group therapy."
+     "explain": "קבוצה = group, קבוצתי = group (תואר). טיפול קבוצתי = group therapy.",
+     "explainEn": "The sentence: \"A group of clients meeting together with one therapist: ______ therapy.\" The answer is קבוצתי = group (adjective, from קבוצה). טיפול קבוצתי = group therapy."
     },
     "q10": {
      "accept": [
       "גיל השלישי"
      ],
-     "explain": "הגיל השלישי = old age, ממש: the third age. אנשים מבוגרים, בני 70 ומעלה."
+     "explain": "הגיל השלישי = old age, ממש: the third age. אנשים מבוגרים, בני 70 ומעלה.",
+     "explainEn": "The sentence: \"Older people, aged 70 and up, are the ______.\" The answer is גיל השלישי = old age, literally \"the third age\"."
     },
     "q11": {
      "accept": [
       "גיל הרך"
      ],
-     "explain": "הגיל הרך = early childhood: ילדים מלידה עד גיל 6. רך = soft, tender."
+     "explain": "הגיל הרך = early childhood: ילדים מלידה עד גיל 6. רך = soft, tender.",
+     "explainEn": "The sentence: \"Children aged 0 to 6 are the ______.\" The answer is גיל הרך = early childhood. רך = soft, tender."
     },
     "q12": {
      "accept": [
       "אמפתיה",
       "אמפטיה"
      ],
-     "explain": "אמפתיה = empathy: להבין ולהרגיש את מה שהאחר מרגיש. כמעט אותה מילה כמו באנגלית."
+     "explain": "אמפתיה = empathy: להבין ולהרגיש את מה שהאחר מרגיש. כמעט אותה מילה כמו באנגלית.",
+     "explainEn": "The sentence: \"The therapist understands and feels what the client feels. This is ______.\" The answer is אמפתיה = empathy, almost the same word as in English."
     }
    }
   },
@@ -453,63 +477,75 @@
    "answers": {
     "q1": {
      "correct": 3,
-     "explain": "התבוננות = observation, מהפועל להתבונן (to observe, to look closely)."
+     "explain": "התבוננות = observation, מהפועל להתבונן (to observe, to look closely).",
+     "explainEn": "התבוננות = observation, from the verb להתבונן (to observe, to look closely)."
     },
     "q2": {
      "correct": 2,
-     "explain": "שכבה = layer, ברבים: שכבות. בציור אפשר לשים צבע בשכבות, אחת על השנייה."
+     "explain": "שכבה = layer, ברבים: שכבות. בציור אפשר לשים צבע בשכבות, אחת על השנייה.",
+     "explainEn": "שכבה = layer; plural: שכבות. In painting you can put color on in layers, one on top of another."
     },
     "q3": {
      "correct": 3,
-     "explain": "קו = line, גלי = wavy (מהמילה גל, wave). קו גלי עולה ויורד כמו גלים."
+     "explain": "קו = line, גלי = wavy (מהמילה גל, wave). קו גלי עולה ויורד כמו גלים.",
+     "explainEn": "קו = line, גלי = wavy (from גל, wave). A wavy line goes up and down like waves."
     },
     "q4": {
      "correct": 3,
-     "explain": "ספונטני = spontaneous: בלי תכנון מראש. ההפך: מתוכנן."
+     "explain": "ספונטני = spontaneous: בלי תכנון מראש. ההפך: מתוכנן.",
+     "explainEn": "ספונטני = spontaneous: without planning ahead. The opposite is מתוכנן (planned)."
     },
     "q5": {
      "correct": 0,
-     "explain": "העברה = transference, נגדית = counter. העברה נגדית = countertransference: הרגשות של המטפל כלפי המטופל."
+     "explain": "העברה = transference, נגדית = counter. העברה נגדית = countertransference: הרגשות של המטפל כלפי המטופל.",
+     "explainEn": "העברה = transference, נגדית = counter. העברה נגדית = countertransference: the therapist's feelings toward the client."
     },
     "q6": {
      "correct": 0,
-     "explain": "מנגנון = mechanism, הגנה = defense. מנגנון הגנה = דרך לא מודעת להגן על עצמנו מכאב."
+     "explain": "מנגנון = mechanism, הגנה = defense. מנגנון הגנה = דרך לא מודעת להגן על עצמנו מכאב.",
+     "explainEn": "מנגנון = mechanism, הגנה = defense. מנגנון הגנה = defense mechanism: an unconscious way of protecting ourselves from pain."
     },
     "q7": {
      "accept": [
       "מפורט"
      ],
-     "explain": "מפורט = detailed, מהמילה פרט (detail). הרבה פרטים קטנים = ציור מפורט."
+     "explain": "מפורט = detailed, מהמילה פרט (detail). הרבה פרטים קטנים = ציור מפורט.",
+     "explainEn": "The sentence: \"The drawing has many small details. The drawing is ______.\" The answer is מפורט = detailed, from פרט (detail)."
     },
     "q8": {
      "accept": [
       "משולש"
      ],
-     "explain": "משולש = triangle: צורה עם שלוש צלעות. שלוש = three, ומכאן משולש."
+     "explain": "משולש = triangle: צורה עם שלוש צלעות. שלוש = three, ומכאן משולש.",
+     "explainEn": "The sentence: \"Draw a ______ with three sides.\" The answer is משולש = triangle. שלוש = three."
     },
     "q9": {
      "accept": [
       "דומיננטי"
      ],
-     "explain": "דומיננטי = dominant: הכי חזק ובולט. הצבע הוא מילה בזכר, לכן דומיננטי (ולא דומיננטית)."
+     "explain": "דומיננטי = dominant: הכי חזק ובולט. הצבע הוא מילה בזכר, לכן דומיננטי (ולא דומיננטית).",
+     "explainEn": "The sentence: \"The red color is the strongest in the drawing. It is ______.\" The answer is דומיננטי = dominant. צבע (color) is masculine, so דומיננטי, not דומיננטית."
     },
     "q10": {
      "accept": [
       "יד"
      ],
-     "explain": "יד שלישית = third hand: מושג בטיפול באמנות. המטפל עוזר ליצירה של המטופל בלי להשתלט עליה."
+     "explain": "יד שלישית = third hand: מושג בטיפול באמנות. המטפל עוזר ליצירה של המטופל בלי להשתלט עליה.",
+     "explainEn": "The sentence: \"The therapist held the page for the client. She served as a third ______.\" The answer is יד = hand. יד שלישית (third hand) is an art therapy term: helping the client's artwork without taking it over."
     },
     "q11": {
      "accept": [
       "הקלה"
      ],
-     "explain": "הקלה = relief. נאנחה בהקלה = sighed with relief: הרגישה שמשהו קשה עבר."
+     "explain": "הקלה = relief. נאנחה בהקלה = sighed with relief: הרגישה שמשהו קשה עבר.",
+     "explainEn": "The sentence: \"At the end of the session Maya breathed deeply and sighed with ______.\" The answer is הקלה = relief. נאנחה בהקלה = sighed with relief."
     },
     "q12": {
      "accept": [
       "כאן"
      ],
-     "explain": "כאן ועכשיו = here and now: מתמקדים במה שקורה ברגע הזה, בחדר. כאן = here."
+     "explain": "כאן ועכשיו = here and now: מתמקדים במה שקורה ברגע הזה, בחדר. כאן = here.",
+     "explainEn": "The sentence: \"We focus on what is happening in the room right now: ______ and now.\" The answer is כאן = here. כאן ועכשיו = here and now."
     }
    }
   }

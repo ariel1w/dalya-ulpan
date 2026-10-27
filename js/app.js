@@ -241,6 +241,15 @@ function correctText(q, k) {
   if (q.type === 'mc') return k.correct != null ? bd(q.options?.[k.correct]) : '<span class="muted">לא הוגדרה</span>';
   return (k.accept || []).length ? `<bdi dir="rtl" lang="he">${h(k.accept[0])}</bdi>` : '<span class="muted">לא הוגדרה</span>';
 }
+// The same feedback in English, behind a button, for students who can't follow the Hebrew yet.
+// English text with Hebrew words inside: keep the line LTR and isolate each Hebrew run.
+const enText = (s) => h(s).replace(/[֐-׿][֐-׿\s\-'"׳״]*[֐-׿]|[֐-׿]/g, (m) => `<bdi dir="rtl" lang="he">${m}</bdi>`);
+function englishFeedback(q, k, ok, near) {
+  const head = ok ? 'Correct!' : near ? 'Almost! Just the spelling is a little different.' : 'Not quite.';
+  const answer = ok ? '' : `<p>The right answer: ${correctText(q, k)}</p>`;
+  return `<b>${head}</b>${answer}${k.explainEn ? `<p>${enText(k.explainEn)}</p>` : ''}`;
+}
+
 // Full sentence with the right word filled in, for the explanation box.
 function filledSentence(q, k) {
   const p = clean(q.prompt);
@@ -301,7 +310,7 @@ async function takeTest(id) {
     else {
       const f = $('#fill');
       f.focus();
-      f.addEventListener('keydown', (e) => { if (e.key === 'Enter') answer(f.value); });
+      f.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); answer(f.value); } });
       $('#check').addEventListener('click', () => answer(f.value));
     }
   };
@@ -351,11 +360,16 @@ async function takeTest(id) {
         </div></div>
         ${filledSentence(q, k)}
         ${k.explain ? `<p class="why"><span class="why-l">למה?</span> ${bd(k.explain)}</p>` : ''}
+        <button class="en-btn" id="enbtn" aria-expanded="false" dir="ltr" lang="en">Don't understand the Hebrew? Read the feedback in English</button>
+        <div class="en-fb" id="enfb" dir="ltr" lang="en" hidden>${englishFeedback(q, k, ok, near)}</div>
         <button class="btn primary" id="next">${last ? 'לסיכום ←' : 'לשאלה הבאה ←'}</button>
       </div>`;
     if (ok && (STREAK[streak] || streak === qs.length)) confetti(60);
     $('#next').focus();
-    $('#next').addEventListener('click', () => { i++; busy = false; draw(); window.scrollTo(0, 0); });
+    // Ignore a click in the first moment, so the key or tap that answered can't also skip the feedback.
+    const shownAt = Date.now();
+    $('#next').addEventListener('click', () => { if (Date.now() - shownAt < 400) return; i++; busy = false; draw(); window.scrollTo(0, 0); });
+    $('#enbtn').addEventListener('click', () => { const en = $('#enfb'); en.hidden = !en.hidden; $('#enbtn').setAttribute('aria-expanded', String(!en.hidden)); });
   }
 
   async function finish() {
@@ -406,6 +420,7 @@ async function resultPage(id) {
             <div class="ans"><span class="lbl">התשובה שלך</span> ${answerText(r.q, r.given)} <span class="mark-${r.final ? 'r' : 'w'}">${r.final ? '✓' : '✗'}</span></div>
             ${!r.final ? `<div class="ans"><span class="lbl">התשובה הנכונה</span> ${correctText(r.q, r.key)}</div>` : ''}
             ${r.key?.explain ? `<p class="why sm">${bd(r.key.explain)}</p>` : ''}
+            ${r.key?.explainEn ? `<details class="en-more" dir="ltr" lang="en"><summary>Read the explanation in English</summary><p>${enText(r.key.explainEn)}</p></details>` : ''}
           </div>
         </div>`).join('')}
       <div class="center"><a class="btn primary" href="#/">חזרה למבחנים</a>${ME.teacher ? ' <button class="btn" id="again">לנסות את המבחן שוב</button>' : ''}</div>
@@ -756,6 +771,7 @@ async function editor(id) {
               <label>משפט (______ במקום המילה החסרה)<input data-f="prompt" dir="rtl" value="${h(clean(q.prompt))}" placeholder="המפגשים מתקיימים פעם בשבוע. זו ה______ של הטיפול."></label>
               <label>תשובות שמתקבלות (מופרדות בפסיק)<input data-f="accept" dir="rtl" value="${h((k.accept || []).join(', '))}" placeholder="תדירות"></label>`}
             <label>הסבר (מופיע לתלמיד/ה מיד אחרי התשובה)<textarea data-f="explain" dir="rtl" rows="2" placeholder="תדירות = frequency: כמה פעמים נפגשים.">${h(k.explain || '')}</textarea></label>
+            <label>הסבר באנגלית (מופיע רק אם התלמיד/ה לוחץ/ת על הכפתור)<textarea data-f="explainEn" dir="ltr" rows="2" placeholder="The answer is תדירות = frequency: how often you meet.">${h(k.explainEn || '')}</textarea></label>
           </div>`;
         }).join('')}</div>
         <div class="add-row"><button class="btn" data-add="mc">+ בחירה מרובה</button><button class="btn" data-add="fill">+ השלמת מילה</button></div>
@@ -774,6 +790,7 @@ async function editor(id) {
       const k = (key.answers[q.id] ||= {});
       q.prompt = $('[data-f="prompt"]', el).value.trim();
       k.explain = $('[data-f="explain"]', el).value.trim();
+      k.explainEn = $('[data-f="explainEn"]', el).value.trim();
       if (q.type === 'mc') {
         q.options = $$('[data-f="opt"]', el).map((x) => x.value.trim());
         const c = $('[data-f="correct"]:checked', el);
@@ -792,7 +809,7 @@ async function editor(id) {
       const n = +s.closest('.eq').dataset.i;
       const old = test.questions[n];
       test.questions[n] = { ...blankQuestion(s.value), id: old.id, prompt: old.prompt };
-      key.answers[old.id] = { explain: key.answers[old.id]?.explain || '' };
+      key.answers[old.id] = { explain: key.answers[old.id]?.explain || '', explainEn: key.answers[old.id]?.explainEn || '' };
       draw();
     }));
     $$('[data-act]').forEach((b) => b.addEventListener('click', () => {

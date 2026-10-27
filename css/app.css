@@ -199,6 +199,12 @@ a.test-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(60
 .why.sm { font-size: 14px; padding: 6px 10px; margin-top: 8px; background: var(--paper); }
 .why-l { font-weight: 700; color: var(--terra-d); margin-inline-end: 4px; }
 .feedback .btn { margin-top: 14px; }
+.en-btn { display: block; margin: 12px 0 0; padding: 6px 0; background: none; border: 0; font: inherit; font-size: 14px; color: var(--terra-d); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: start; }
+.en-fb { margin: 8px 0 0; padding: 10px 14px; background: rgba(255, 255, 255, .7); border-radius: 12px; line-height: 1.6; text-align: left; }
+.en-fb p { margin: 6px 0 0; }
+.en-more { margin-top: 6px; font-size: 14px; text-align: left; }
+.en-more summary { color: var(--terra-d); cursor: pointer; }
+.en-more p { margin: 6px 0 0; padding: 6px 10px; background: var(--paper); border-radius: 10px; }
 
 /* results */
 .result-head { display: flex; align-items: center; gap: 22px; padding: 26px; overflow: hidden; flex-wrap: wrap; }
