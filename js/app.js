@@ -2,7 +2,8 @@ import { SITE, firebaseConfig, OWNERS } from './config.js';
 import { gradeSubmission, fillStatus, clean } from './grade.js';
 
 const params = new URLSearchParams(location.search);
-const DEMO = params.has('demo') || firebaseConfig.apiKey === 'FILL_ME';
+// The preview (demo data) runs only on this computer; the public site never ships the demo file.
+const DEMO = (params.has('demo') && /^(localhost|127\.)/.test(location.hostname)) || firebaseConfig.apiKey === 'FILL_ME';
 const S = await import(DEMO ? './store-demo.js' : './store-fb.js');
 
 // ---------- helpers ----------
