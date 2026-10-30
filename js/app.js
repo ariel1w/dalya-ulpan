@@ -105,7 +105,7 @@ function header() {
   const teacher = ME?.teacher && !studentView;
   const r = location.hash;
   const nav = teacher
-    ? [['#/', 'לוח בקרה'], ['#/t/students', 'תלמידים'], ['#/t/import', 'הוספת מבחן'], ['#/t/settings', 'הגדרות וגיבוי']]
+    ? [['#/', 'ראשי'], ['#/t/students', 'תלמידים'], ['#/t/stats', 'סטטיסטיקה'], ['#/t/settings', 'הגדרות']]
     : [['#/', 'המבחנים שלי']];
   $('#top').innerHTML = `
     <a class="brand" href="#/"><span class="mark">א</span><span><b>${h(SITE.name)}</b><small>${h(SITE.tagline)}</small></span></a>
@@ -174,12 +174,14 @@ async function route() {
   window.scrollTo(0, 0);
   loading();
   try {
+    if (!ME.teacher && !ME.fullName) return namePage();
     if (parts[0] === 'test') return await takeTest(parts[1]);
     if (parts[0] === 'result') return await resultPage(parts[1]);
     if (parts[0] === 't' && ME.teacher) {
       if (parts[1] === 'board') return await board(parts[2], parts[3]);
       if (parts[1] === 'students') return await studentsPage();
       if (parts[1] === 'student') return await studentPage(parts[2]);
+      if (parts[1] === 'stats') return await statsPage();
       if (parts[1] === 'edit') return await editor(parts[2]);
       if (parts[1] === 'import') return await importPage();
       if (parts[1] === 'settings') return await settingsPage();
@@ -193,6 +195,24 @@ async function route() {
 window.addEventListener('hashchange', route);
 
 // ---------- student ----------
+// Asked once, at the first sign-in: Google names are often a nickname or a first name only.
+function namePage() {
+  app.innerHTML = `<div class="page narrow"><form class="card form name-card" id="nameform">
+    <h1>ברוכים הבאים!</h1>
+    <p>מה השם המלא שלך? שם פרטי ושם משפחה, כדי ש${h(SITE.teacher.split(' ')[0])} תדע מי ענה.</p>
+    <p class="en muted" dir="ltr" lang="en">What is your full name? First name and last name.</p>
+    <input id="fullname" required autocomplete="name" dir="auto" value="${h(ME.name.includes('@') ? '' : ME.name)}" placeholder="שם פרטי ושם משפחה">
+    <button class="btn primary">המשך ←</button>
+  </form></div>`;
+  $('#fullname').focus();
+  $('#nameform').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const v = $('#fullname').value.trim().replace(/\s+/g, ' ');
+    if (v.split(' ').length < 2) return toast('נא לכתוב שם פרטי וגם שם משפחה', 'bad');
+    try { await S.setMyName(v); route(); } catch (err) { toast('לא נשמר: ' + err.message, 'bad'); }
+  });
+}
+
 async function studentHome() {
   const [tests, subs] = await Promise.all([S.listTests(), S.listMySubmissions()]);
   const bySub = Object.fromEntries(subs.map((s) => [s.testId, s]));
@@ -446,7 +466,10 @@ async function loadAll() {
   const [tests, allSubs, grades, users, tEmails] = await Promise.all([S.listTests(), S.listSubmissions(), S.listGrades(), S.listUsers(), teacherEmails()]);
   const keys = Object.fromEntries(await Promise.all(tests.map(async (t) => [t.id, await S.getKey(t.id)])));
   // Teachers' own tries (student view) stay out of the class numbers.
-  const subs = allSubs.filter((s) => !tEmails.has(s.email));
+  // The full name a student typed wins over the Google account name, everywhere.
+  const names = Object.fromEntries(users.map((u) => [u.id, u.fullName || u.name]));
+  users.forEach((u) => (u.name = names[u.id]));
+  const subs = allSubs.filter((s) => !tEmails.has(s.email)).map((s) => ({ ...s, name: names[s.uid] || s.name }));
   return { tests, subs, grades, users: users.filter((u) => !tEmails.has(u.email)), keys };
 }
 
@@ -549,45 +572,73 @@ function spread(scores) {
   return `<div class="spread">${bins.map((c, b) => `<div class="sb" title="${b * 10}${b < 10 ? `-${b * 10 + 9}` : ''}%: ${c}"><div class="sbar" style="height:${(100 * c) / max}%">${c ? `<span>${c}</span>` : ''}</div><small>${b * 10}</small></div>`).join('')}</div>`;
 }
 
+// One row per student: full name, every test's grade, the average. Used on the home page and the students page.
+function studentRows(data, a) {
+  return data.users.map((u) => {
+    const mine = a.perTest.map((p) => ({ p, x: p.graded.find((x) => x.s.uid === u.id) }));
+    const pcts = mine.filter((m) => m.x?.s.submitted).map((m) => m.x.g.pct);
+    return { u, mine, avg: avgOf(pcts) };
+  }).sort((x, y) => String(x.u.name).localeCompare(String(y.u.name), 'he'));
+}
+
+function studentsTable(rows, a) {
+  if (!rows.length) return '<p class="muted">עוד אין תלמידים. כשתלמיד/ה ייכנס/תיכנס לאתר, השם יופיע כאן.</p>';
+  return `<div class="table-wrap"><table class="stable">
+    <thead><tr><th class="name">שם</th>${a.perTest.map((p) => `<th>${bd(p.t.title)}</th>`).join('')}<th>ממוצע</th><th></th></tr></thead>
+    <tbody>${rows.map(({ u, mine, avg }) => `<tr class="go-row" data-href="#/t/student/${encodeURIComponent(u.id)}">
+      <td class="name"><a href="#/t/student/${encodeURIComponent(u.id)}"><span class="avatar sm">${u.photo ? `<img src="${h(u.photo)}" alt="" referrerpolicy="no-referrer">` : initials(u.name)}</span><span><b>${bd(u.name)}</b><small><bdi dir="ltr">${h(u.email)}</bdi></small></span></a></td>
+      ${mine.map(({ x }) => `<td>${!x ? '<span class="muted small">לא התחיל/ה</span>' : x.s.submitted ? `<span class="score ${pctClass(x.g.pct)}"><bdi dir="ltr">${x.g.score}/${x.g.total}</bdi></span>${x.tries.length > 1 ? `<small class="tries">${x.tries.length} ניסיונות</small>` : ''}${x.s.retrying ? '<small class="chip progress">עושה שוב</small>' : ''}` : '<span class="chip progress">באמצע</span>'}</td>`).join('')}
+      <td><b><bdi dir="ltr">${avg != null ? avg + '%' : '–'}</bdi></b></td>
+      <td><a class="btn sm" href="#/t/student/${encodeURIComponent(u.id)}">כל התשובות ←</a></td></tr>`).join('')}</tbody>
+  </table></div>`;
+}
+const rowLinks = () => $$('.go-row').forEach((r) => r.addEventListener('click', (e) => { if (!e.target.closest('a,button')) location.hash = r.dataset.href; }));
+
 async function dashboard() {
   const data = await loadAll();
   const a = analyze(data);
-  const { users } = data;
+  const { users, keys } = data;
   const allScores = a.perTest.flatMap((p) => p.scores);
-  const hardWords = a.perTest.flatMap((p) => p.qs.filter((q) => q.n >= 1).map((q) => ({ ...q, t: p.t }))).sort((x, y) => x.pct - y.pct).slice(0, 8);
-  setTimeout(() => $('#mock')?.addEventListener('click', () => setStudentView(true)));
+  const hard = a.perTest.flatMap((p) => p.qs.filter((q) => q.n >= 1).map((q) => ({ ...q, t: p.t }))).sort((x, y) => x.pct - y.pct).slice(0, 3);
   app.innerHTML = `
     <div class="page">
-      <div class="greet row"><div><h1>שלום, ${bd(first(ME.name))}</h1><p class="muted">${users.length ? `${users.length} תלמידים נכנסו לאתר.` : 'עוד אין תלמידים. שתפו את הקישור מעמוד ההגדרות.'}</p></div>
-        <div class="actions"><a class="btn" href="#/t/edit/new">מבחן חדש</a><a class="btn primary" href="#/t/import">ייבוא מ-<bdi dir="ltr">Google Forms</bdi></a></div></div>
-      <div class="kpis">
-        <div class="kpi"><span>ממוצע הכיתה</span><b><bdi dir="ltr">${allScores.length ? avgOf(allScores) + '%' : '–'}</bdi></b></div>
-        <div class="kpi"><span>מבחנים שהושלמו</span><b>${allScores.length}</b></div>
-        <div class="kpi"><span>באמצע מבחן</span><b>${a.perTest.reduce((x, p) => x + p.inProgress, 0)}</b></div>
-        <div class="kpi"><span>תלמידים</span><b>${users.length}</b></div>
-      </div>
-      <button class="card mock-card" id="mock">
-        <span class="mc-ic">🎒</span>
-        <span class="mc-t"><b>להיכנס כתלמידה לדוגמה</b><span class="muted">לעבור על המבחנים בדיוק כמו התלמידים. התשובות שלך לא נספרות, ויש כפתור ברור לחזרה.</span></span>
-        <span class="go">כניסה ←</span>
-      </button>
-      ${insightBox(insightsFor(a, users))}
-      <div class="two">
-        <div class="card">
-          <h3>מבחנים</h3>
-          <div class="tlist">${a.perTest.map((p) => `
-            <a class="trow" href="#/t/board/${encodeURIComponent(p.t.id)}">
-              <span class="tn"><b>${bd(p.t.title)}</b> <span class="muted small">${bd(p.t.subtitle || '')}</span>${p.t.published ? '' : ' <span class="chip new">מוסתר</span>'}</span>
-              <span class="tm"><span class="meter"><i style="width:${users.length ? (100 * p.done.length) / users.length : 0}%"></i></span><span class="muted small">${p.done.length}${users.length ? ` מתוך ${users.length}` : ''} השלימו</span></span>
-              <span class="ta score ${p.avg != null ? pctClass(p.avg) : ''}"><bdi dir="ltr">${p.avg == null ? '–' : p.avg + '%'}</bdi></span>
-            </a>`).join('') || '<p class="muted">אין עדיין מבחנים.</p>'}</div>
-        </div>
-        <div class="card">
-          <h3>מילים לחזרה <span class="muted small">(הכי פחות הצלחה, מכל המבחנים)</span></h3>
-          ${hardWords.length ? barList(hardWords.map((q) => ({ label: bd(q.word), pct: q.pct, tone: tone(q.pct), note: `${q.right}/${q.n}` }))) : '<p class="muted">יופיע אחרי שתלמידים יענו.</p>'}
-        </div>
-      </div>
+      <div class="greet"><h1>שלום, ${bd(first(ME.name))}</h1><p class="muted">התלמידים, המבחנים והסטטיסטיקה של הכיתה, הכל בעמוד אחד.</p></div>
+
+      <section class="card sect">
+        <div class="sect-h"><h2>התלמידים</h2><span class="muted">${users.length ? `${users.length} תלמידים · לחיצה על שם מראה כל תשובה ותשובה` : ''}</span></div>
+        ${studentsTable(studentRows(data, a), a)}
+      </section>
+
+      <section class="card sect">
+        <div class="sect-h"><h2>המבחנים</h2><span class="actions"><a class="btn sm" href="#/t/edit/new">+ מבחן חדש</a><a class="btn sm" href="#/t/import">ייבוא מ-<bdi dir="ltr">Google Forms</bdi></a></span></div>
+        <p class="muted small">התלמידים רואים רק מבחן שהמתג שלו דלוק. מדליקים כשרוצים לשחרר את המבחן לכיתה.</p>
+        <div class="tests-list">${a.perTest.map((p) => `
+          <div class="tline">
+            <label class="switch pub"><input type="checkbox" data-pub="${h(p.t.id)}" ${p.t.published ? 'checked' : ''}><i></i><span>${p.t.published ? 'גלוי לתלמידים' : 'מוסתר'}</span></label>
+            <span class="tl-name"><b>${bd(p.t.title)}</b> <span class="muted">${bd(p.t.subtitle || '')}</span></span>
+            <span class="tl-num muted">${p.done.length}${users.length ? ` מתוך ${users.length}` : ''} סיימו${p.avg != null ? ` · ממוצע <b><bdi dir="ltr">${p.avg}%</bdi></b>` : ''}</span>
+            <span class="tl-act"><a class="btn sm" href="#/t/board/${encodeURIComponent(p.t.id)}">תוצאות</a><a class="btn ghost sm" href="#/t/edit/${encodeURIComponent(p.t.id)}">עריכה</a></span>
+          </div>`).join('') || '<p class="muted">אין עדיין מבחנים.</p>'}</div>
+      </section>
+
+      <a class="card sect link-card" href="#/t/stats">
+        <span><h2>סטטיסטיקה של הכיתה</h2>
+        <span class="muted">${allScores.length ? `ממוצע הכיתה <b><bdi dir="ltr">${avgOf(allScores)}%</bdi></b> · ${allScores.length} מבחנים הושלמו${hard.length ? ` · הכי קשה: ${hard.map((q) => bd(q.word)).join(', ')}` : ''}` : 'תופיע אחרי שתלמידים יסיימו מבחן.'}</span></span>
+        <span class="go">לכל הסטטיסטיקה ←</span>
+      </a>
     </div>`;
+  rowLinks();
+  $$('[data-pub]').forEach((c) => c.addEventListener('change', async () => {
+    const t = data.tests.find((x) => x.id === c.dataset.pub);
+    c.disabled = true;
+    try {
+      await S.saveTest({ ...t, published: c.checked }, keys[t.id] || { answers: {} });
+      t.published = c.checked;
+      c.nextElementSibling.nextElementSibling.textContent = c.checked ? 'גלוי לתלמידים' : 'מוסתר';
+      toast(c.checked ? `התלמידים רואים עכשיו את "${t.title}"` : `"${t.title}" הוסתר מהתלמידים`);
+    } catch (e) { c.checked = !c.checked; toast('לא נשמר: ' + e.message, 'bad'); }
+    c.disabled = false;
+  }));
 }
 
 function csvCell(v) { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }
@@ -607,7 +658,7 @@ async function board(id, tab = 'questions') {
 
   app.innerHTML = `
     <div class="page wide">
-      <a href="#/" class="back">→ לוח בקרה</a>
+      <a href="#/" class="back">→ ראשי</a>
       <div class="greet row"><div><h1>${bd(test.title)} <span class="muted">${bd(test.subtitle || '')}</span></h1></div>
         <div class="actions">
           <label class="switch"><input type="checkbox" id="pub" ${test.published ? 'checked' : ''}><i></i>פורסם לתלמידים</label>
@@ -703,47 +754,91 @@ async function board(id, tab = 'questions') {
 async function studentsPage() {
   const data = await loadAll();
   const a = analyze(data);
-  const rows = data.users.map((u) => {
-    const mine = a.perTest.map((p) => ({ p, x: p.graded.find((x) => x.s.uid === u.id) }));
-    const pcts = mine.filter((m) => m.x?.s.submitted).map((m) => m.x.g.pct);
-    return { u, mine, avg: avgOf(pcts) };
-  }).sort((x, y) => String(x.u.name).localeCompare(String(y.u.name)));
-  app.innerHTML = `<div class="page"><div class="greet"><h1>תלמידים</h1><p class="muted">${rows.length} תלמידים. לחיצה על שם מציגה את כל הפרטים.</p></div>
-    <div class="card table-wrap"><table class="stable">
-      <thead><tr><th class="name">שם</th><th>ממוצע</th>${a.perTest.map((p) => `<th>${bd(p.t.title)}</th>`).join('')}<th>נראה/תה לאחרונה</th></tr></thead>
-      <tbody>${rows.map(({ u, mine, avg }) => `<tr>
-        <td class="name"><a href="#/t/student/${encodeURIComponent(u.id)}"><span class="avatar sm">${u.photo ? `<img src="${h(u.photo)}" alt="" referrerpolicy="no-referrer">` : initials(u.name)}</span><span><b>${bd(u.name)}</b><small><bdi dir="ltr">${h(u.email)}</bdi></small></span></a></td>
-        <td><span class="score ${avg != null ? pctClass(avg) : ''}"><bdi dir="ltr">${avg != null ? avg + '%' : '–'}</bdi></span></td>
-        ${mine.map(({ x }) => `<td>${!x ? '<span class="muted small">לא התחיל/ה</span>' : x.s.submitted ? `<bdi dir="ltr">${x.g.score}/${x.g.total}</bdi>${triesLine(x)}` : '<span class="chip progress">באמצע</span>'}</td>`).join('')}
-        <td class="muted small">${when(u.lastSeen)}</td></tr>`).join('') || `<tr><td colspan="9" class="empty-row">עדיין אין תלמידים. שתפו את קישור האתר עם הכיתה (הגדרות וגיבוי).</td></tr>`}</tbody>
-    </table></div></div>`;
+  app.innerHTML = `<div class="page"><div class="greet"><h1>תלמידים</h1><p class="muted">${data.users.length} תלמידים. לחיצה על שם מראה כל תשובה ותשובה.</p></div>
+    <div class="card">${studentsTable(studentRows(data, a), a)}</div></div>`;
+  rowLinks();
+}
+
+// Every try of one student on one test, oldest first, each graded on its own.
+function triesOf(raw, t, key, grades) {
+  if (!raw) return [];
+  const out = (raw.attempts || []).filter((x) => x.submittedAt).map((x) => ({ at: millis(x.submittedAt), g: gradeSubmission(t, key, { ...x, submitted: true }) }));
+  if (raw.submitted) out.push({ at: raw.submittedAt, g: gradeSubmission(t, key, raw, grades[raw.id]?.overrides) });
+  else if (Object.values(raw.answers || {}).some(answered)) out.push({ at: null, now: true, g: gradeSubmission(t, key, raw) });
+  return out;
+}
+
+function answersTable(g) {
+  return `<div class="table-wrap"><table class="atable">
+    <thead><tr><th>#</th><th>השאלה</th><th>מה ענה/תה</th><th>התשובה הנכונה</th><th></th></tr></thead>
+    <tbody>${g.rows.map((r, n) => {
+      const st = !answered(r.given) ? 'blank' : r.final ? 'right' : 'wrong';
+      return `<tr class="${st}"><td class="muted">${n + 1}</td>
+        <td>${r.q.type === 'mc' ? bd(clean(r.q.prompt)) : `<bdi dir="rtl" lang="he">${h(clean(r.q.prompt).replace(BLANK, '____'))}</bdi>`}</td>
+        <td><b>${answerText(r.q, r.given)}</b></td>
+        <td>${r.final ? '<span class="muted">כמו התשובה</span>' : correctText(r.q, r.key)}</td>
+        <td class="mk">${st === 'right' ? '<span class="mark-r">✓ נכון</span>' : st === 'wrong' ? '<span class="mark-w">✗ טעות</span>' : '<span class="muted small">לא ענה/תה</span>'}</td></tr>`;
+    }).join('')}</tbody></table></div>`;
 }
 
 async function studentPage(uid) {
   const data = await loadAll();
   const a = analyze(data);
   const u = data.users.find((x) => x.id === uid) || { name: data.subs.find((s) => s.uid === uid)?.name || 'תלמיד/ה', email: '' };
-  const mine = a.perTest.map((p) => ({ p, x: p.graded.find((x) => x.s.uid === uid) }));
+  const mine = a.perTest.map((p) => ({ p, x: p.graded.find((x) => x.s.uid === uid), tries: triesOf(data.subs.find((s) => s.uid === uid && s.testId === p.t.id), p.t, p.key, data.grades) }));
   const pcts = mine.filter((m) => m.x?.s.submitted).map((m) => m.x.g.pct);
-  const missed = mine.flatMap(({ p, x }) => (x ? x.g.rows.filter((r) => answered(r.given) && !r.final).map((r) => ({ word: qWord(r.q, r.key), r, t: p.t })) : []));
   const gotRight = mine.reduce((n, { x }) => n + (x ? x.g.rows.filter((r) => r.final).length : 0), 0);
   const answeredN = mine.reduce((n, { x }) => n + (x ? x.g.rows.filter((r) => answered(r.given)).length : 0), 0);
-  app.innerHTML = `<div class="page narrow"><a href="#/t/students" class="back">→ תלמידים</a>
-    <div class="greet row"><div class="row-l"><span class="avatar lg">${u.photo ? `<img src="${h(u.photo)}" alt="" referrerpolicy="no-referrer">` : initials(u.name)}</span><div><h1>${bd(u.name)}</h1><p class="muted"><bdi dir="ltr">${h(u.email)}</bdi>${u.lastSeen ? ` · נראה/תה לאחרונה ${when(u.lastSeen)}` : ''}</p></div></div></div>
+  app.innerHTML = `<div class="page"><a href="#/t/students" class="back">→ כל התלמידים</a>
+    <div class="greet row"><div class="row-l"><span class="avatar lg">${u.photo ? `<img src="${h(u.photo)}" alt="" referrerpolicy="no-referrer">` : initials(u.name)}</span><div><h1>${bd(u.name)}</h1><p class="muted"><bdi dir="ltr">${h(u.email)}</bdi>${u.lastSeen ? ` · נכנס/ה לאחרונה ${when(u.lastSeen)}` : ''}</p></div></div></div>
     <div class="kpis">
       <div class="kpi"><span>ממוצע</span><b><bdi dir="ltr">${pcts.length ? avgOf(pcts) + '%' : '–'}</bdi></b></div>
-      <div class="kpi"><span>מבחנים שהושלמו</span><b>${pcts.length}<small> מתוך ${a.perTest.length}</small></b></div>
+      <div class="kpi"><span>מבחנים שסיים/ה</span><b>${pcts.length}<small> מתוך ${a.perTest.length}</small></b></div>
       <div class="kpi"><span>תשובות נכונות</span><b>${gotRight}<small> מתוך ${answeredN}</small></b></div>
     </div>
-    <div class="card"><h3>לפי מבחן</h3>
-      ${barList(mine.map(({ p, x }) => ({ label: `${bd(p.t.title)} <span class="muted small">${bd(p.t.subtitle || '')}</span>`, pct: x?.s.submitted ? x.g.pct : null, tone: x?.s.submitted ? tone(x.g.pct) : '', note: !x ? 'לא התחיל/ה' : x.s.submitted ? `${x.g.score}/${x.g.total}` : 'באמצע' })))}
-      ${mine.some(({ x }) => x?.tries.length > 1 || x?.s.retrying) ? `<div class="tries-list">${mine.filter(({ x }) => x?.tries.length > 1 || x?.s.retrying).map(({ p, x }) => `<p><b>${bd(p.t.title)}:</b> ${triesLine(x)}</p>`).join('')}</div>` : ''}
+    ${mine.map(({ p, x, tries }, ti) => `<section class="card sect">
+      <div class="sect-h"><h2>${bd(p.t.title)} <span class="muted">${bd(p.t.subtitle || '')}</span></h2>
+        ${!x ? '<span class="chip">לא התחיל/ה</span>' : x.s.submitted ? `<span class="score big ${pctClass(x.g.pct)}"><bdi dir="ltr">${x.g.score}/${x.g.total} · ${x.g.pct}%</bdi></span>` : '<span class="chip progress">באמצע המבחן</span>'}</div>
+      ${!tries.length ? '<p class="muted">עוד לא ענה/תה על אף שאלה במבחן הזה.</p>' : `
+        ${tries.length > 1 ? `<div class="try-tabs" role="tablist">${tries.map((tr, i) => `<button class="${i === tries.length - 1 ? 'on' : ''}" data-tt="${ti}" data-i="${i}">ניסיון ${i + 1} · ${tr.now ? 'באמצע' : `<bdi dir="ltr">${tr.g.score}/${tr.g.total}</bdi>`}${tr.at ? ` <small>${when(tr.at)}</small>` : ''}</button>`).join('')}</div>` : tries[0].at ? `<p class="muted small">הוגש ${when(tries[0].at)}</p>` : ''}
+        ${tries.map((tr, i) => `<div class="try" data-tp="${ti}" data-i="${i}" ${i === tries.length - 1 ? '' : 'hidden'}>${answersTable(tr.g)}</div>`).join('')}`}
+    </section>`).join('')}
+  </div>`;
+  $$('.try-tabs button').forEach((b) => b.addEventListener('click', () => {
+    $$(`.try-tabs button[data-tt="${b.dataset.tt}"]`).forEach((x) => x.classList.toggle('on', x === b));
+    $$(`.try[data-tp="${b.dataset.tt}"]`).forEach((x) => (x.hidden = x.dataset.i !== b.dataset.i));
+  }));
+}
+
+async function statsPage() {
+  const data = await loadAll();
+  const a = analyze(data);
+  const { users } = data;
+  const allScores = a.perTest.flatMap((p) => p.scores);
+  const hardWords = a.perTest.flatMap((p) => p.qs.filter((q) => q.n >= 1).map((q) => ({ ...q, t: p.t }))).sort((x, y) => x.pct - y.pct).slice(0, 8);
+  app.innerHTML = `<div class="page"><a href="#/" class="back">→ ראשי</a>
+    <div class="greet"><h1>סטטיסטיקה של הכיתה</h1><p class="muted">איך כל הכיתה עשתה, בכל מבחן ובכל שאלה.</p></div>
+    <div class="kpis">
+      <div class="kpi"><span>ממוצע הכיתה</span><b><bdi dir="ltr">${allScores.length ? avgOf(allScores) + '%' : '–'}</bdi></b></div>
+      <div class="kpi"><span>מבחנים שהושלמו</span><b>${allScores.length}</b></div>
+      <div class="kpi"><span>באמצע מבחן</span><b>${a.perTest.reduce((x, p) => x + p.inProgress, 0)}</b></div>
+      <div class="kpi"><span>תלמידים</span><b>${users.length}</b></div>
     </div>
-    <div class="card"><h3>מילים לחזרה <span class="muted small">(${missed.length})</span></h3>
-      ${missed.length ? `<div class="missed">${missed.map((m) => `<div class="mrow"><b>${bd(m.word)}</b><span class="muted small">ענה/תה: ${answerText(m.r.q, m.r.given)}</span><span class="muted small">${bd(m.t.title)}</span></div>`).join('')}</div>` : '<p class="muted">אין. כל התשובות נכונות עד עכשיו.</p>'}
-    </div>
-    ${mine.filter((m) => m.x).map(({ p, x }) => `<details class="card st-test"><summary class="st-h"><h3>${bd(p.t.title)} <span class="muted">${bd(p.t.subtitle || '')}</span></h3><span class="muted small">כל התשובות ▾</span></summary>
-      ${x.g.rows.map((r, n) => `<div class="mini ${!answered(r.given) ? 'blank' : r.final ? 'right' : 'wrong'}"><span class="qnum sm">${n + 1}</span><span class="grow">${bd(qWord(r.q, r.key))}</span><span>${answerText(r.q, r.given)}</span><span class="mark-${r.final ? 'r' : 'w'}">${!answered(r.given) ? '' : r.final ? '✓' : '✗'}</span></div>`).join('')}</details>`).join('')}
+    ${insightBox(insightsFor(a, users))}
+    <section class="card sect"><div class="sect-h"><h2>מילים לחזרה</h2><span class="muted">המילים שהכי פחות הצליחו בהן, מכל המבחנים</span></div>
+      ${hardWords.length ? barList(hardWords.map((q) => ({ label: bd(q.word), pct: q.pct, tone: tone(q.pct), note: `${q.right}/${q.n}` }))) : '<p class="muted">יופיע אחרי שתלמידים יענו.</p>'}</section>
+    ${a.perTest.map((p) => `<section class="card sect">
+      <div class="sect-h"><h2>${bd(p.t.title)} <span class="muted">${bd(p.t.subtitle || '')}</span></h2><a class="btn sm" href="#/t/board/${encodeURIComponent(p.t.id)}">לטבלת התלמידים ←</a></div>
+      <p class="muted">${p.done.length}${users.length ? ` מתוך ${users.length}` : ''} סיימו${p.avg != null ? ` · ממוצע <b><bdi dir="ltr">${p.avg}%</bdi></b> · חציון <bdi dir="ltr">${p.median}%</bdi>` : ''}${p.t.published ? '' : ' · <span class="chip new">מוסתר מהתלמידים</span>'}</p>
+      ${p.qs.some((q) => q.n) ? `<div class="table-wrap"><table class="atable classq">
+        <thead><tr><th>#</th><th>השאלה</th><th>התשובה הנכונה</th><th>כמה צדקו</th><th>מי טעה</th></tr></thead>
+        <tbody>${p.qs.map((q) => {
+          const wrong = q.rows.filter((x) => !x.r.final).map((x) => x.s.name);
+          return `<tr><td class="muted">${q.i + 1}</td><td>${q.q.type === 'mc' ? bd(clean(q.q.prompt)) : `<bdi dir="rtl" lang="he">${h(clean(q.q.prompt).replace(BLANK, '____'))}</bdi>`}</td><td>${correctText(q.q, q.key)}</td>
+          <td class="qbar"><span class="bt"><i class="${tone(q.pct)}" style="width:${q.pct ?? 0}%"></i></span><b><bdi dir="ltr">${q.pct == null ? '–' : q.pct + '%'}</bdi></b> <small class="muted">${q.right}/${q.n}</small></td>
+          <td class="who-wrong">${wrong.length ? wrong.map((n) => `<span class="tag w">${bd(n)}</span>`).join('') : '<span class="muted small">אף אחד</span>'}</td></tr>`;
+        }).join('')}</tbody></table></div>` : '<p class="muted">עוד אף אחד לא ענה על המבחן הזה.</p>'}
+    </section>`).join('')}
   </div>`;
 }
 
@@ -925,7 +1020,7 @@ function formToTest(form) {
 async function importPage() {
   app.innerHTML = `
     <div class="page narrow">
-      <a href="#/" class="back">→ לוח בקרה</a>
+      <a href="#/" class="back">→ ראשי</a>
       <div class="greet"><h1>הוספת מבחן</h1><p class="muted">הופכים טופס <bdi dir="ltr">Google</bdi> למבחן באתר, או בונים מבחן כאן.</p></div>
       <div class="card form">
         <h3>מטופס <bdi dir="ltr">Google</bdi></h3>

@@ -34,7 +34,10 @@ export function onUser(cb) {
     if (!u) { me = null; return cb(null); }
     me = { uid: u.uid, email: (u.email || '').toLowerCase(), name: u.displayName || u.email, photo: u.photoURL || '' };
     me.teacher = OWNERS.includes(me.email);
-    setDoc(doc(db, 'users', me.uid), { email: me.email, name: me.name, photo: me.photo, lastSeen: serverTimestamp() }, { merge: true }).catch(() => {});
+    // The full name the student typed once; Google's name is often a nickname or a first name only.
+    try { me.fullName = (await getDoc(doc(db, 'users', me.uid))).data()?.fullName || ''; } catch { me.fullName = ''; }
+    if (me.fullName) me.name = me.fullName;
+    setDoc(doc(db, 'users', me.uid), { email: me.email, name: u.displayName || u.email, photo: me.photo, lastSeen: serverTimestamp() }, { merge: true }).catch(() => {});
     cb(me);
   });
 }
@@ -49,6 +52,10 @@ export async function signIn() {
   }
 }
 export const signOutUser = () => signOut(auth);
+export async function setMyName(fullName) {
+  await setDoc(doc(db, 'users', me.uid), { fullName }, { merge: true });
+  me.fullName = me.name = fullName;
+}
 
 // ---- tests ----
 export async function listTests() {

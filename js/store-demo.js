@@ -27,7 +27,8 @@ export async function onUser(cb) {
   const teacher = OWNERS.includes(email);
   const uid = teacher ? 'teacher' : 'u_' + email;
   const name = teacher ? 'Dalya Weisbrod' : email.split('@')[0];
-  me = { uid, email, name, photo: '', teacher };
+  const fullName = S.users[uid]?.fullName || '';
+  me = { uid, email, name: fullName || name, fullName, photo: '', teacher };
   if (!teacher) { S.users[uid] = { ...S.users[uid], email, name, photo: '', lastSeen: Date.now() }; persist(); }
   cb(me);
 }
@@ -38,6 +39,7 @@ export async function signIn(email) {
   localStorage.setItem(K + '.email', email);
   location.reload();
 }
+export async function setMyName(fullName) { S.users[me.uid] = { ...S.users[me.uid], fullName }; me.fullName = me.name = fullName; persist(); }
 export async function signOutUser() { localStorage.removeItem(K + '.email'); location.reload(); }
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
