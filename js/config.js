@@ -7,12 +7,12 @@ export const firebaseConfig = {
 };
 
 // The only account that sees the teacher board. Everyone else who signs in is a student.
-export const OWNERS = ['dalya1f@gmail.com'];
+export const OWNERS = ['dalyaf@gmail.com'];
 
 export const SITE = {
   name: 'האולפן של דליה',
-  tagline: 'עברית דרך טיפול באמנות',
-  taglineEn: 'Hebrew through art therapy',
+  tagline: 'עברית למטפלים באמנות',
+  taglineEn: 'Hebrew for Art Therapists',
   teacher: 'דליה ויסברוד',
   teacherEn: 'Dalya',
 };
